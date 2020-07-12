@@ -1,7 +1,13 @@
 bl_info = {
-    "name": "Move X Axis",
-    "blender": (2, 80, 0),
-    "category": "Object",
+    "name": "3d selection",
+    "author": "JBlock",
+    "version": (1, 0),
+    "blender": (2, 83, 0),
+    "location": "",
+    "description": "Lets the user make a selection by 3d position around the 3d cursor with different shapes to search by",
+    "warning": "",
+    "doc_url": "",
+    "category": "3D View",
 }
 
 import bpy
