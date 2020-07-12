@@ -4,8 +4,8 @@ bl_info = {
     "version": (1, 0),
     "blender": (2, 83, 0),
     "location": "",
-    "description": "Lets the user make a selection by 3d position around the 3d cursor with different shapes to search by",
-    "warning": "",
+    "description": "Lets the user make a selection by choosing a shape around the 3d cursor and selecting within it, located in edit mode right click menu",
+    "warning": "this is in development so there may be bugs or cases where it might crash blender",
     "doc_url": "",
     "category": "3D View",
 }
@@ -18,9 +18,15 @@ class SphereSelect(bpy.types.Operator):
     bl_idname = "object.sphere_select"        # Unique identifier for buttons and menu items to reference.
     bl_label = "Sphere select"         # Display name in the interface.
     bl_options = {'REGISTER', 'UNDO'}  # Enable undo for the operator.
-
+    
+    radius: bpy.props.FloatProperty(name="radius", default=1)
+    
+    addToSelect: bpy.props.BoolProperty(name="add to selection", default=True)
+    
     def execute(self, context):        # execute() is called when running the operator.
-        radius = 1
+        radius = self.radius
+        if self.addToSelect == False:
+            bpy.ops.mesh.select_all(action='DESELECT')
         """
         Input
         -------
@@ -70,9 +76,17 @@ class BoxSelect(bpy.types.Operator):
     bl_idname = "object.box_select"        # Unique identifier for buttons and menu items to reference.
     bl_label = "Box select"         # Display name in the interface.
     bl_options = {'REGISTER', 'UNDO'}  # Enable undo for the operator.
-
+    
+    sizeX: bpy.props.FloatProperty(name="Scale x", default=2)
+    sizeY: bpy.props.FloatProperty(name="Scale y", default=2)
+    sizeZ: bpy.props.FloatProperty(name="Scale z", default=2)
+    
+    addToSelect: bpy.props.BoolProperty(name="add to selection", default=True)
+    
     def execute(self, context):        # execute() is called when running the operator.
-        size = (1,1,1)
+        size = (self.sizeX,self.sizeY,self.sizeZ)
+        if self.addToSelect == False:
+            bpy.ops.mesh.select_all(action='DESELECT')
         """
         Input
         -------
@@ -118,14 +132,26 @@ class BoxSelect(bpy.types.Operator):
         bpy.ops.object.mode_set(mode = 'EDIT') 
         return {'FINISHED'}            # Lets Blender know the operator finished successfully.
 
+
+def BoxSelectMenu(self, context):
+    self.layout.operator(BoxSelect.bl_idname)
+
+def SphereSelectMenu(self, context):
+    self.layout.operator(SphereSelect.bl_idname)
+
 def register():
     bpy.utils.register_class(BoxSelect)
     bpy.utils.register_class(SphereSelect)
-
+    bpy.types.VIEW3D_MT_edit_mesh_context_menu.prepend(BoxSelectMenu)
+    bpy.types.VIEW3D_MT_edit_mesh_context_menu.prepend(SphereSelectMenu)
+    
 
 def unregister():
     bpy.utils.unregister_class(BoxSelect)
     bpy.utils.unregister_class(SphereSelect)
+    
+    bpy.types.VIEW3D_MT_edit_mesh_context_menu.remove(BoxSelectMenu)
+    bpy.types.VIEW3D_MT_edit_mesh_context_menu.remove(SphereSelectMenu)
     
 
 
