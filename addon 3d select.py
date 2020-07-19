@@ -4,7 +4,7 @@ bl_info = {
     "version": (1, 0),
     "blender": (2, 83, 0),
     "location": "",
-    "description": "Lets the user make a selection by choosing a shape around the 3d cursor and selecting within it, located in edit mode right click menu",
+    "description": "Lets the user make a selection by choosing a shape around the 3d cursor and selecting within it",
     "warning": "this is in development so there may be bugs or cases where it might crash blender",
     "doc_url": "",
     "category": "3D View",
@@ -19,7 +19,7 @@ class SphereSelect(bpy.types.Operator):
     bl_label = "Sphere select"         # Display name in the interface.
     bl_options = {'REGISTER', 'UNDO'}  # Enable undo for the operator.
     
-    radius: bpy.props.FloatProperty(name="radius", default=1)
+    radius: bpy.props.FloatProperty(name="radius", default=1,min = 1,max = 2)
     
     addToSelect: bpy.props.BoolProperty(name="add to selection", default=True)
     
@@ -54,12 +54,18 @@ class SphereSelect(bpy.types.Operator):
             vertices[x] = co_final
         
         
+        nv1 = []
+        for x in vertices:
+            if abs(vertices[x][0] - cursor3d[0]) <= abs(box_size[0] / 2) and abs(vertices[x][1] - cursor3d[1]) <= abs(box_size[1] / 2) and abs(vertices[x][2] - cursor3d[2]) <= abs(box_size[2] / 2):
+                nv1.append(x)
+        
         nv = []
         counter = 0
-        for x in vertices:
+        for x in nv1:
             if (cursor3d - vertices[x]).length <= radius:
                 nv.append(counter)
-            counter += 1
+            counter += 1    
+            
         #select the vertices
         bpy.ops.object.mode_set(mode = 'EDIT') 
         bpy.ops.mesh.select_mode(type="VERT")
