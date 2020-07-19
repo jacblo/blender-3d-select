@@ -53,15 +53,10 @@ class SphereSelect(bpy.types.Operator):
             co_final = obj.matrix_world @ v.co
             vertices[x] = co_final
         
-        
-        nv1 = []
-        for x in vertices:
-            if abs(vertices[x][0] - cursor3d[0]) <= abs(box_size[0] / 2) and abs(vertices[x][1] - cursor3d[1]) <= abs(box_size[1] / 2) and abs(vertices[x][2] - cursor3d[2]) <= abs(box_size[2] / 2):
-                nv1.append(x)
-        
+   
         nv = []
         counter = 0
-        for x in nv1:
+        for x in vertices:
             if (cursor3d - vertices[x]).length <= radius:
                 nv.append(counter)
             counter += 1    
